@@ -113,30 +113,46 @@ class ApiClient {
   /// subscription would leave the screen stuck on a failure until the provider
   /// was rebuilt, whereas this way a dropped connection shows the error and
   /// the next refresh recovers on its own.
+  ///
+  /// A periodic background refresh (see [RevisionBus.refreshInBackground])
+  /// that fails while data is already on screen does **not** replace it with
+  /// an error: the screen keeps its last good data and the next refresh tries
+  /// again. Any failure before data has been shown, or on a refresh caused by
+  /// a change, is still delivered as an error.
   Stream<T> watch<T>(Set<ApiTopic> topics, Future<T> Function() fetch) {
     late StreamController<T> controller;
     StreamSubscription<ApiTopic>? subscription;
+    StreamSubscription<void>? backgroundSubscription;
     var inFlight = false;
     var queued = false;
+    var queuedInBackground = true;
+    var hasValue = false;
 
-    Future<void> load() async {
+    Future<void> load({bool background = false}) async {
       // One request at a time per stream. A mutation that bumps several
       // topics at once would otherwise start a fetch for each of them.
       if (inFlight) {
+        queuedInBackground = queued
+            ? queuedInBackground && background
+            : background;
         queued = true;
         return;
       }
       inFlight = true;
       try {
         final value = await fetch();
+        hasValue = true;
         if (!controller.isClosed) controller.add(value);
       } catch (error, stack) {
-        if (!controller.isClosed) controller.addError(error, stack);
+        final keepShownData = background && hasValue;
+        if (!keepShownData && !controller.isClosed) {
+          controller.addError(error, stack);
+        }
       } finally {
         inFlight = false;
         if (queued) {
           queued = false;
-          await load();
+          await load(background: queuedInBackground);
         }
       }
     }
@@ -144,11 +160,16 @@ class ApiClient {
     controller = StreamController<T>(
       onListen: () {
         subscription = revisions.changesTo(topics).listen((_) => load());
+        backgroundSubscription = revisions.backgroundRefreshes.listen(
+          (_) => load(background: true),
+        );
         load();
       },
       onCancel: () async {
         await subscription?.cancel();
+        await backgroundSubscription?.cancel();
         subscription = null;
+        backgroundSubscription = null;
       },
     );
     return controller.stream;

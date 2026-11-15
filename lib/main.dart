@@ -11,6 +11,7 @@ import 'core/providers/core_providers.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_controller.dart';
+import 'core/widgets/auto_refresh.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -305,16 +306,18 @@ class VenvoApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
 
-    return MaterialApp.router(
-      title: AppConstants.appName,
-      debugShowCheckedModeBanner: false,
-      routerConfig: router,
-      themeMode: themeMode,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
-      // Scroll behaviour that works with a mouse wheel, a trackpad and a
-      // finger, with no overscroll glow.
-      scrollBehavior: const MaterialScrollBehavior(),
+    return AutoRefresh(
+      child: MaterialApp.router(
+        title: AppConstants.appName,
+        debugShowCheckedModeBanner: false,
+        routerConfig: router,
+        themeMode: themeMode,
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        // Scroll behaviour that works with a mouse wheel, a trackpad and a
+        // finger, with no overscroll glow.
+        scrollBehavior: const MaterialScrollBehavior(),
+      ),
     );
   }
 }

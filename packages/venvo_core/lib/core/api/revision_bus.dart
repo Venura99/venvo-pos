@@ -48,5 +48,20 @@ class RevisionBus {
   Stream<ApiTopic> changesTo(Set<ApiTopic> topics) =>
       _changes.stream.where(topics.contains);
 
-  Future<void> dispose() => _changes.close();
+  final StreamController<void> _background = StreamController<void>.broadcast();
+
+  /// Asks every watching screen to re-read from the server, because another
+  /// device may have changed something. Unlike [bump] this is not caused by
+  /// a write on this device, so a failure to re-read keeps the data already
+  /// shown rather than replacing it with an error (see `ApiClient.watch`).
+  void refreshInBackground() {
+    if (!_background.isClosed) _background.add(null);
+  }
+
+  Stream<void> get backgroundRefreshes => _background.stream;
+
+  Future<void> dispose() async {
+    await _changes.close();
+    await _background.close();
+  }
 }

@@ -111,10 +111,12 @@ class _BrandingPanel extends StatelessWidget {
                 color: scheme.onPrimary.withValues(alpha: 0.9),
               ),
               AppSpacing.hGapSm,
-              Text(
-                'Same data on every device, kept safely on the server',
-                style: context.text.bodySmall?.copyWith(
-                  color: scheme.onPrimary.withValues(alpha: 0.9),
+              Flexible(
+                child: Text(
+                  'Same data on every device, kept safely on the server',
+                  style: context.text.bodySmall?.copyWith(
+                    color: scheme.onPrimary.withValues(alpha: 0.9),
+                  ),
                 ),
               ),
             ],
