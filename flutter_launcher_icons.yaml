@@ -1,0 +1,24 @@
+# App icons for every platform, generated from one image.
+# After changing assets/branding/app_icon.png, regenerate with:
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "assets/branding/app_icon.png"
+
+  android: true
+  min_sdk_android: 21
+  # Android 8+ shapes icons (circle, squircle...). The logo is inset so the
+  # wording is not cut off, on a background matching the image's own.
+  adaptive_icon_background: "#011A11"
+  adaptive_icon_foreground: "assets/branding/app_icon.png"
+  adaptive_icon_foreground_inset: 16
+
+  windows:
+    generate: true
+    image_path: "assets/branding/app_icon.png"
+    icon_size: 256
+
+  web:
+    generate: true
+    image_path: "assets/branding/app_icon.png"
+    background_color: "#011A11"
+    theme_color: "#1B8A2E"

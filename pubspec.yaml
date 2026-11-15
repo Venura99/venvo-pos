@@ -64,6 +64,7 @@ dev_dependencies:
     path: server
   shelf: ^1.4.2
   sqlite3: ^2.7.5
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
