@@ -106,13 +106,13 @@ class _BrandingPanel extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.cloud_off_outlined,
+                Icons.cloud_done_outlined,
                 size: 18,
                 color: scheme.onPrimary.withValues(alpha: 0.9),
               ),
               AppSpacing.hGapSm,
               Text(
-                'Works completely offline on this computer',
+                'Same data on every device, kept safely on the server',
                 style: context.text.bodySmall?.copyWith(
                   color: scheme.onPrimary.withValues(alpha: 0.9),
                 ),
