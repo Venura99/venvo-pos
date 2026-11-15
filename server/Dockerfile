@@ -57,9 +57,13 @@ FROM debian:stable-slim
 # libsqlite3-0 is the database engine. ca-certificates is not needed by the
 # API itself but is needed by anything it is later asked to talk to over TLS,
 # and costs almost nothing.
+# libsqlite3-0 ships only libsqlite3.so.0, but the Dart sqlite3 package opens
+# "libsqlite3.so" (normally from the -dev package), so the name is linked.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends libsqlite3-0 ca-certificates tzdata \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s "$(find /usr/lib -name 'libsqlite3.so.0' | head -n 1)" /usr/lib/libsqlite3.so \
+    && test -e /usr/lib/libsqlite3.so
 
 # Runs as a normal user. A process that only needs to read its own binary and
 # write one directory has no business being root.
