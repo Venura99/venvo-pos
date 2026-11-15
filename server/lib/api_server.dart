@@ -59,6 +59,7 @@ import 'routes/payment_routes.dart';
 import 'routes/petty_cash_routes.dart';
 import 'routes/report_routes.dart';
 import 'routes/return_routes.dart';
+import 'routes/branding_routes.dart';
 import 'routes/salary_routes.dart';
 import 'routes/stock_routes.dart';
 import 'routes/system_routes.dart';
@@ -373,6 +374,7 @@ class VenvoApiServer {
               clock: clock,
               audit: bootstrap.audit,
             ),
+      logos: bootstrap.paths == null ? null : LogoStore(bootstrap.requirePaths),
       reminders: ChequeReminderService(
         database: bootstrap.database,
         settings: bootstrap.settings,
@@ -472,6 +474,7 @@ class VenvoApiServer {
       )
       // Liveness, for the reverse proxy and for monitoring. Reveals nothing
       // about the business and needs no credentials.
+      ..mount('/api/v1/', brandingPublicRoutes(logos: modules.logos).call)
       ..get('/health', (Request request) => Api.ok({'status': 'ok'}));
 
     final identity = Router()
@@ -570,6 +573,15 @@ class VenvoApiServer {
                       log: log,
                     ).call,
             )
+            .add(
+              modules.logos == null
+                  ? Router().call
+                  : brandingAdminRoutes(
+                      logos: modules.logos!,
+                      settings: modules.settings,
+                      audit: modules.audit,
+                    ).call,
+            )
             .handler,
       );
 
@@ -630,6 +642,7 @@ class _Modules {
     required this.audit,
     required this.backups,
     required this.attachments,
+    required this.logos,
     required this.reminders,
     required this.reminderSender,
   });
@@ -668,6 +681,7 @@ class _Modules {
   /// Null when the graph has no data directory to write archives into.
   final BackupService? backups;
   final AttachmentService? attachments;
+  final LogoStore? logos;
   final ChequeReminderService reminders;
   final ReminderSender reminderSender;
 }

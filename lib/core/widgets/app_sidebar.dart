@@ -4,6 +4,7 @@ import 'package:venvo_core/features/authentication/domain/authenticated_user.dar
 
 import '../router/nav_destinations.dart';
 import '../theme/design_tokens.dart';
+import 'company_logo.dart';
 
 /// The application's primary navigation.
 ///
@@ -110,47 +111,63 @@ class _Brand extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mark = Container(
+      height: 32,
+      width: 32,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        color: context.colors.primary,
+        borderRadius: AppRadii.smAll,
+      ),
+      child: Text(
+        'V',
+        style: context.text.titleMedium?.copyWith(
+          color: context.colors.onPrimary,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
     return SizedBox(
       height: AppLayout.topBarHeight,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
         child: Row(
           children: [
-            Container(
-              height: 32,
-              width: 32,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: context.colors.primary,
-                borderRadius: AppRadii.smAll,
-              ),
-              child: Text(
-                'V',
-                style: context.text.titleMedium?.copyWith(
-                  color: context.colors.onPrimary,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-            ),
+            if (isCollapsed) mark,
             if (!isCollapsed) ...[
-              AppSpacing.hGapSm,
+              // The uploaded company logo when there is one.
               Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppConstants.appName,
-                      style: context.text.titleSmall,
-                      overflow: TextOverflow.ellipsis,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: CompanyLogo(
+                    height: 30,
+                    maxWidth: 160,
+                    fallback: Row(
+                      children: [
+                        mark,
+                        AppSpacing.hGapSm,
+                        Flexible(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                AppConstants.appName,
+                                style: context.text.titleSmall,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                'Wholesale',
+                                style: context.text.labelSmall?.copyWith(
+                                  color: context.colors.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    Text(
-                      'Wholesale',
-                      style: context.text.labelSmall?.copyWith(
-                        color: context.colors.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
               IconButton(

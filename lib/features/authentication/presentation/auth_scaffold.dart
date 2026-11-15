@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:venvo_core/core/constants/app_constants.dart';
 import '../../../core/theme/design_tokens.dart';
+import '../../../core/widgets/company_logo.dart';
 
 /// Centred card layout shared by the sign-in, first-run and change-password
 /// screens, with the product identity on the left on wide windows.
@@ -138,7 +139,7 @@ class _Logo extends StatelessWidget {
         ? context.colors.onPrimary
         : context.colors.onSurface;
 
-    return Row(
+    final mark = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
@@ -181,6 +182,15 @@ class _Logo extends StatelessWidget {
           ],
         ),
       ],
+    );
+
+    // The uploaded company logo when there is one; this built-in mark until
+    // then, and if it cannot be fetched.
+    return CompanyLogo(
+      height: 48,
+      maxWidth: 220,
+      onDarkBackground: onPrimary,
+      fallback: mark,
     );
   }
 }

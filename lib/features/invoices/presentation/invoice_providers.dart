@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:venvo_core/core/api/revision_bus.dart';
 import 'package:venvo_core/core/services/document_pdf_service.dart';
 import 'package:venvo_core/features/invoices/api/invoice_api.dart';
 import 'package:venvo_core/features/invoices/data/invoice_query_repository.dart';
@@ -51,9 +52,13 @@ final invoiceTotalsProvider = FutureProvider<InvoiceTotalsSnapshot>((
       .totals(ref.watch(invoiceFilterProvider));
 });
 
-/// The business's own details, as they print on a document.
-final businessIdentityProvider = FutureProvider<BusinessIdentity>((ref) {
-  return ref.watch(settingsServiceProvider).businessIdentity();
+/// The business's own details, as they print on a document. Re-read when
+/// settings change, so a new name or logo reaches the next printed document.
+final businessIdentityProvider = StreamProvider<BusinessIdentity>((ref) {
+  final settings = ref.watch(settingsServiceProvider);
+  return ref
+      .watch(apiClientProvider)
+      .watch({ApiTopic.settings}, settings.businessIdentity);
 });
 
 /// Renders printable documents.

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../constants/app_constants.dart';
 import '../errors/failures.dart';
 import '../services/document_pdf_service.dart';
@@ -130,7 +132,51 @@ class SettingsApi {
       email: clean(await getString(SettingKeys.businessEmail)),
       taxId: clean(await getString(SettingKeys.businessTaxId)),
       footerNote: clean(await getString(SettingKeys.invoiceFooterNote)),
+      logo: await logo(),
     );
+  }
+
+  // ---- logo --------------------------------------------------------------
+
+  String? _logoVersionCached;
+  Uint8List? _logoBytes;
+
+  /// Changes whenever the logo does; null when there is no logo.
+  String? get logoVersion => getStringSync(SettingKeys.businessLogoVersion);
+
+  /// The company logo, fetched once per version and cached.
+  Future<Uint8List?> logo() async {
+    await _ensureLoaded();
+    final version = logoVersion;
+    if (version == null) return null;
+    if (version == _logoVersionCached && _logoBytes != null) return _logoBytes;
+    final file = await _client.getBytes('/api/v1/branding/logo?v=$version');
+    // 204: removed on another device since this cache was loaded.
+    if (file.bytes.isEmpty) return null;
+    _logoBytes = Uint8List.fromList(file.bytes);
+    _logoVersionCached = version;
+    return _logoBytes;
+  }
+
+  /// Uploads a new logo (PNG or JPEG) and refreshes the cache.
+  Future<void> uploadLogo(
+    List<int> bytes, {
+    required String contentType,
+  }) async {
+    await _client.putBytes(
+      '/api/v1/branding/logo',
+      bytes,
+      contentType: contentType,
+      bumps: {ApiTopic.settings},
+    );
+    await load();
+  }
+
+  Future<void> removeLogo() async {
+    await _client.delete('/api/v1/branding/logo', bumps: {ApiTopic.settings});
+    _logoBytes = null;
+    _logoVersionCached = null;
+    await load();
   }
 
   // The named accessors `SettingsService` provides, so client code reads the

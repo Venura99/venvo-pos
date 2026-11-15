@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -176,6 +177,29 @@ void main() {
       expect(spec.lines.first.discountLabel, '5%');
 
       expectValidPdf(await pdf.build(spec));
+    });
+
+    test('renders with the company logo in the header', () async {
+      final invoiceId = await raiseShopInvoice();
+      final detail = await InvoiceQueryRepository(
+        fixture.db,
+      ).invoiceDetail(invoiceId);
+      // LOGO_FILE points at a real logo when checking one by hand; otherwise
+      // a valid 1x1 PNG stands in.
+      final logoFile = Platform.environment['LOGO_FILE'];
+      final logo = logoFile != null
+          ? File(logoFile).readAsBytesSync()
+          : base64Decode(
+              'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk'
+              '+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+            );
+      final withLogo = DocumentPdfService(
+        business: BusinessIdentity(name: 'Venvo Global (Pvt) Ltd', logo: logo),
+      );
+      final bytes = await withLogo.build(buildInvoicePdfSpec(detail));
+      expectValidPdf(bytes);
+      // The image is embedded as an XObject.
+      expect(String.fromCharCodes(bytes), contains('/XObject'));
     });
 
     test('renders the discount and outstanding blocks', () async {

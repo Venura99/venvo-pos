@@ -191,9 +191,42 @@ class ApiClient {
     Map<String, Object?>? query,
     Set<ApiTopic> bumps = const {},
     Duration uploadTimeout = const Duration(minutes: 2),
+  }) => _sendBytes(
+    'POST',
+    path,
+    bytes,
+    contentType: contentType,
+    query: query,
+    bumps: bumps,
+    uploadTimeout: uploadTimeout,
+  );
+
+  /// As [postBytes], for replacing a single file (the company logo).
+  Future<Map<String, Object?>> putBytes(
+    String path,
+    List<int> bytes, {
+    required String contentType,
+    Set<ApiTopic> bumps = const {},
+  }) => _sendBytes(
+    'PUT',
+    path,
+    bytes,
+    contentType: contentType,
+    bumps: bumps,
+    uploadTimeout: const Duration(minutes: 2),
+  );
+
+  Future<Map<String, Object?>> _sendBytes(
+    String method,
+    String path,
+    List<int> bytes, {
+    required String contentType,
+    Map<String, Object?>? query,
+    required Set<ApiTopic> bumps,
+    required Duration uploadTimeout,
   }) async {
     final response = await _exchange(
-      'POST',
+      method,
       path,
       query: query,
       bytes: bytes,
@@ -204,7 +237,7 @@ class ApiClient {
       if (bumps.isNotEmpty) revisions.bump(bumps);
       return _decodeBody(response);
     }
-    throw _failureFrom(response, 'POST', path);
+    throw _failureFrom(response, method, path);
   }
 
   /// Downloads raw bytes — an attached photo — rather than JSON.

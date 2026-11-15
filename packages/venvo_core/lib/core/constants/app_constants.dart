@@ -41,6 +41,10 @@ class SettingKeys {
   static const String businessPhone = 'business.phone';
   static const String businessEmail = 'business.email';
   static const String businessTaxId = 'business.tax_id';
+
+  /// Changes whenever the logo is uploaded or removed (empty when there is
+  /// none), so clients know to fetch it again. Written only by the server.
+  static const String businessLogoVersion = 'business.logo_version';
   static const String invoiceFooterNote = 'invoice.footer_note';
   static const String themeMode = 'ui.theme_mode';
   static const String allowNegativeStock = 'inventory.allow_negative_stock';

@@ -51,6 +51,8 @@ const Map<String, _SettingType> _writableSettings = {
 const Map<String, _SettingType> _readOnlySettings = {
   SettingKeys.lastAutoBackupAt: _SettingType.text,
   SettingKeys.seededVersion: _SettingType.text,
+  // Maintained by the logo upload and removal in branding_routes.dart.
+  SettingKeys.businessLogoVersion: _SettingType.text,
 };
 
 /// The dashboard, the journal listing, settings and the audit trail.

@@ -22,6 +22,7 @@ class BusinessIdentity {
     this.email,
     this.taxId,
     this.footerNote,
+    this.logo,
   });
 
   /// Reads the identity out of the settings table.
@@ -49,6 +50,9 @@ class BusinessIdentity {
   final String? email;
   final String? taxId;
   final String? footerNote;
+
+  /// The company logo (PNG or JPEG), printed at the top left of documents.
+  final Uint8List? logo;
 
   /// Contact details on one line, for the header.
   String get contactLine => [
@@ -166,6 +170,11 @@ class DocumentPdfService {
   final AppPaths? _paths;
   final BusinessIdentity _business;
 
+  pw.ImageProvider? get _logoImage {
+    final logo = _business.logo;
+    return logo == null || logo.isEmpty ? null : pw.MemoryImage(logo);
+  }
+
   static final DateFormat _dateFormat = DateFormat('d MMM yyyy');
   static final DateFormat _dateTimeFormat = DateFormat('d MMM yyyy, HH:mm');
 
@@ -255,6 +264,14 @@ class DocumentPdfService {
         pw.Row(
           crossAxisAlignment: pw.CrossAxisAlignment.start,
           children: [
+            if (_logoImage != null) ...[
+              pw.Container(
+                height: 44,
+                constraints: const pw.BoxConstraints(maxWidth: 140),
+                child: pw.Image(_logoImage!, fit: pw.BoxFit.contain),
+              ),
+              pw.SizedBox(width: 12),
+            ],
             pw.Expanded(
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,

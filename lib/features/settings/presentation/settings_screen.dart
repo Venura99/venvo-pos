@@ -16,6 +16,7 @@ import '../../../core/widgets/section_card.dart';
 import '../../authentication/presentation/auth_controller.dart';
 import '../../payments/presentation/cheque_photo.dart'
     show chequeExtrasApiProvider;
+import 'logo_editor.dart';
 
 /// Business details, operating policies and appearance.
 ///
@@ -287,6 +288,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               subtitle: 'Printed on invoices, delivery notes and receipts.',
               child: Column(
                 children: [
+                  const LogoEditor(canEdit: true),
+                  AppSpacing.gapLg,
                   TextFormField(
                     controller: _name,
                     decoration: const InputDecoration(
