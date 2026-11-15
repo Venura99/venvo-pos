@@ -1,0 +1,69 @@
+name: venvo_pos
+description: "Venvo Global (Pvt) Ltd - Wholesale POS & Inventory Management"
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Domain models, the Drift schema and every business rule. Pure Dart, with
+  # no Flutter dependency, so the API server runs the same code verbatim
+  # rather than a re-implementation of it. See packages/venvo_core.
+  venvo_core:
+    path: packages/venvo_core
+
+  # State management & navigation
+  flutter_riverpod: ^2.6.1
+  go_router: ^14.6.2
+
+  # Row types only. The client no longer opens a database of its own — every
+  # read and write goes to the server — so the native SQLite library and the
+  # per-user data folder are gone from the app, which is also what lets it
+  # build for the web at all.
+  drift: ^2.26.0
+
+  # What the device remembers between runs: its server and its session.
+  shared_preferences: ^2.3.3
+  http: ^1.2.2
+
+  # Browser APIs, used only by the web build to hand a file over as a download.
+  web: ^1.1.0
+
+  # Platform / filesystem
+  path: ^1.9.0
+  file_picker: ^8.1.7
+  # The phone camera, so an agent can photograph a cheque at the shop.
+  image_picker: ^1.1.2
+  url_launcher: ^6.3.1
+  window_manager: ^0.4.3
+
+  # Documents & export
+  pdf: ^3.11.1
+  printing: ^5.13.4
+  csv: ^6.0.0
+  archive: ^3.6.1
+
+  # Utilities
+  intl: ^0.20.2
+  crypto: ^3.0.6
+  uuid: ^4.5.1
+  collection: ^1.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+  # The real server, run in-process by the boot test so the screens are
+  # exercised against the actual server logic rather than a stand-in.
+  venvo_server:
+    path: server
+  shelf: ^1.4.2
+  sqlite3: ^2.7.5
+
+flutter:
+  uses-material-design: true

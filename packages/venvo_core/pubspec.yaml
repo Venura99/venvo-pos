@@ -1,0 +1,72 @@
+name: venvo_core
+description: >-
+  Venvo POS domain, database and business logic. Pure Dart with no Flutter
+  dependency, so the same code runs in the desktop client, in the Android
+  client and inside the API server.
+publish_to: 'none'
+version: 0.1.0
+
+# Deliberately no `flutter` dependency. This package is the reason the cloud
+# move is not a rewrite: the server runs StockLedgerService,
+# FinancialLedgerService, InvoiceService and the rest *verbatim*, inside the
+# same SQLite transactions the 673 existing tests already prove. Adding a
+# Flutter import here would break that and is always the wrong fix — anything
+# that needs Flutter belongs in the client package.
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  # Database
+  drift: ^2.26.0
+  sqlite3: ^2.7.5
+
+  # Filesystem and paths. `path_provider` is NOT here on purpose: resolving a
+  # per-user application directory is a client concern. The server is told
+  # where its data lives by configuration, through AppPaths.at().
+  path: ^1.9.0
+
+  # Documents and export. All three are pure Dart and so run server-side,
+  # which is where invoice PDFs and report exports are generated.
+  pdf: ^3.11.1
+  csv: ^6.0.0
+  archive: ^3.6.1
+
+  # Wire format for the domain models, shared by the server and the clients.
+  json_annotation: ^4.9.0
+
+  # The client half of the API lives here rather than in the Flutter app, for
+  # two reasons: the Windows and Android clients then share one
+  # implementation, and the server's own tests can drive the real client
+  # against a real server in one process, which is the only way to prove the
+  # two halves actually agree.
+  http: ^1.2.2
+
+  # Utilities
+  intl: ^0.20.2
+  crypto: ^3.0.6
+  uuid: ^4.5.1
+  collection: ^1.19.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  build_runner: ^2.4.13
+  drift_dev: ^2.26.0
+  json_serializable: ^6.8.0
+
+  # PINNED, and not a formality. drift_dev 2.31 cannot resolve the table class
+  # in `integer().references(Users, #id)` when it runs against analyzer 10. It
+  # does not fail the build: it emits "This parameter should be a simple class
+  # name" as a *warning* and generates the schema with the foreign key left
+  # out. Regenerating with analyzer 10 silently took all 106 foreign keys out
+  # of this database — found by one test, which inserted a product with a
+  # category id that does not exist and watched SQLite accept it.
+  #
+  # The Flutter SDK holds the client package on analyzer 8, which is why the
+  # generated code was correct for eight phases. A standalone package resolves
+  # whatever is newest, so it has to be held here deliberately.
+  #
+  # Before raising this, regenerate and run the guard that now exists for it:
+  #   flutter test test/core/database_schema_test.dart
+  # "every declared foreign key survives code generation" counts what SQLite
+  # is actually enforcing and must report 107.
+  analyzer: ^8.1.1

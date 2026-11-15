@@ -1,0 +1,31 @@
+# TLS is obtained and renewed automatically from Let's Encrypt. The clients
+# talk to this; nothing talks to the API directly.
+{$VENVO_DOMAIN} {
+	tls {$VENVO_TLS_EMAIL}
+
+	# The API speaks plain HTTP inside the compose network, which is private
+	# to this host. TLS is terminated here.
+	reverse_proxy api:8080
+
+	encode gzip
+
+	header {
+		# Serves the web app and its API from one origin.
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		# Nothing here should ever be framed or sniffed as a document.
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+
+	# The access log records who called what and how long it took. It does not
+	# record request bodies or the Authorization header, which would put
+	# passwords and session tokens on disk.
+	log {
+		output file /data/access.log {
+			roll_size 10MiB
+			roll_keep 10
+		}
+	}
+}

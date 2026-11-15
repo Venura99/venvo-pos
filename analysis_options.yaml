@@ -1,0 +1,52 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - build/**
+    - windows/**
+    - android/**
+    - web/**
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  errors:
+    # Money and quantity arithmetic must never silently lose a value.
+    unnecessary_null_comparison: warning
+    # Awaiting is not optional in code that writes to the database.
+    unawaited_futures: error
+    discarded_futures: warning
+    # A missing case in a switch over a document status is a bug, not a style
+    # issue.
+    missing_enum_constant_in_switch: error
+    body_might_complete_normally_catch_error: error
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_dynamic_calls
+    - avoid_slow_async_io
+    - avoid_type_to_string
+    - cancel_subscriptions
+    - close_sinks
+    - collection_methods_unrelated_type
+    - comment_references
+    - directives_ordering
+    - literal_only_boolean_expressions
+    - no_adjacent_strings_in_list
+    - omit_local_variable_types
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_in_for_each
+    - prefer_final_locals
+    - prefer_single_quotes
+    - require_trailing_commas
+    - sort_constructors_first
+    - test_types_in_equals
+    - throw_in_finally
+    - unawaited_futures
+    - unnecessary_await_in_return
+    - unnecessary_lambdas
+    - unnecessary_parenthesis
+    - unnecessary_statements
+    - use_string_buffers

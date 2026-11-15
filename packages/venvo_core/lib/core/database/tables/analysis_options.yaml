@@ -1,0 +1,13 @@
+# Drift's documented way to express a CHECK constraint references the column
+# getter from inside its own definition:
+#
+#   IntColumn get quantity => integer().check(quantity.isBiggerThanValue(0))();
+#
+# The analyzer sees that as a recursive getter, which it is not: drift resolves
+# the reference against the generated column, not the getter. The rule is off
+# for table definitions only.
+include: ../../../../analysis_options.yaml
+
+linter:
+  rules:
+    recursive_getters: false

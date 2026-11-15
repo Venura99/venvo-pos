@@ -1,0 +1,15 @@
+# Pure-Dart lints. The client package uses flutter_lints; this package must
+# not, because it has no Flutter dependency.
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+  language:
+    strict-casts: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    - prefer_single_quotes
+    - require_trailing_commas

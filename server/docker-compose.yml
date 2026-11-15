@@ -1,0 +1,65 @@
+# Venvo POS API behind Caddy, which obtains and renews a TLS certificate on
+# its own. Run from the repository root:
+#
+#   docker compose -f server/docker-compose.yml up -d --build
+#
+# Set VENVO_DOMAIN and VENVO_TLS_EMAIL first, e.g. in server/.env:
+#
+#   VENVO_DOMAIN=pos.venvo.lk
+#   VENVO_TLS_EMAIL=you@venvoglobal.lk
+#   WHATSAPP_TOKEN=...            (optional, for cheque reminders)
+#   WHATSAPP_PHONE_NUMBER_ID=...
+#
+# Point the domain's A record at this server before starting, because Caddy
+# proves ownership over HTTP to issue the certificate.
+
+services:
+  api:
+    build:
+      # The repository root, because the server depends on
+      # ../packages/venvo_core by path.
+      context: ..
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    environment:
+      VENVO_DATA_DIR: /var/lib/venvo-pos
+      VENVO_PORT: 8080
+      VENVO_BIND_ADDRESS: any
+      VENVO_SESSION_TTL_HOURS: 12
+      VENVO_SESSION_IDLE_MINUTES: 480
+      TZ: Asia/Colombo
+      # WhatsApp Cloud API, for cheque reminders. Kept in server/.env, never in
+      # the app or the database. Leave the token empty to turn reminders off;
+      # the Settings screen then says they are not configured.
+      WHATSAPP_TOKEN: ${WHATSAPP_TOKEN:-}
+      WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID:-}
+      WHATSAPP_TEMPLATE: ${WHATSAPP_TEMPLATE:-cheque_reminder}
+      WHATSAPP_TEMPLATE_LANGUAGE: ${WHATSAPP_TEMPLATE_LANGUAGE:-en}
+    volumes:
+      - venvo-data:/var/lib/venvo-pos
+    # Deliberately no `ports:`. The API is reachable only from Caddy on the
+    # compose network, so there is no way to reach it over plain HTTP from
+    # outside this host even by mistake.
+    expose:
+      - '8080'
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - '80:80'
+      - '443:443'
+    environment:
+      VENVO_DOMAIN: ${VENVO_DOMAIN:?set VENVO_DOMAIN, e.g. pos.venvo.lk}
+      VENVO_TLS_EMAIL: ${VENVO_TLS_EMAIL:?set VENVO_TLS_EMAIL}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  venvo-data:
+  caddy-data:
+  caddy-config:

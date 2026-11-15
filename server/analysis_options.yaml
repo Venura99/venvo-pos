@@ -1,0 +1,14 @@
+# Pure-Dart lints. Without this file the root project's flutter_lints rules
+# are applied to the server, which is a different rule set for a package that
+# has no Flutter in it.
+include: package:lints/recommended.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    - prefer_single_quotes
+    - require_trailing_commas

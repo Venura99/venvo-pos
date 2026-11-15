@@ -1,0 +1,10 @@
+# Keeps the Docker build context to source only: build output, caches and
+# platform folders the image never uses would otherwise be uploaded on every
+# build, and a stale build/web could be copied in by mistake.
+**/.dart_tool/
+**/build/
+android/
+windows/
+installer/
+.git/
+.claude/

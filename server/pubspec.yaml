@@ -1,0 +1,44 @@
+name: venvo_server
+description: >-
+  HTTP API for Venvo POS. Hosts the business logic from venvo_core over the
+  server-side SQLite database and serves the Windows and Android clients.
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  # The business logic, unchanged. The server adds a transport; it does not
+  # re-implement a single rule. If a rule ever needs changing it is changed in
+  # venvo_core, where the existing tests cover it, and both the server and the
+  # clients get the change.
+  venvo_core:
+    path: ../packages/venvo_core
+
+  shelf: ^1.4.2
+  shelf_router: ^1.1.4
+  # Serves the built web app, so a browser reaches page and API at one address.
+  shelf_static: ^1.1.3
+
+  drift: ^2.26.0
+  sqlite3: ^2.7.5
+
+  crypto: ^3.0.6
+  path: ^1.9.0
+  uuid: ^4.5.1
+  intl: ^0.20.2
+
+  # Outbound calls: the WhatsApp Cloud API for cheque reminders.
+  http: ^1.2.2
+
+  # For CheckedFromJsonException, so a malformed request body becomes a 422
+  # naming the offending field rather than a 500.
+  json_annotation: ^4.9.0
+
+dev_dependencies:
+  lints: ^5.0.0
+  test: ^1.25.0
+  # Used only by the tests, to drive the API the way a client does rather than
+  # by calling the handler directly — so the test exercises real HTTP, real
+  # status codes and real headers.

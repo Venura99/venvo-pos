@@ -1,0 +1,33 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # A missing or mistyped field throws CheckedFromJsonException naming
+          # the field, instead of an opaque cast error. The server turns that
+          # into a 422 the client can attach to the right input — see
+          # JsonBody.decode. Without this, a bad request body surfaces as a
+          # 500 and looks like a server fault.
+          checked: true
+          # Nested models get their own toJson() called rather than being
+          # handed over as objects and relied upon to encode themselves.
+          explicit_to_json: true
+          # Dart field names are the wire names. No renaming, so the payload
+          # reads the same as the model and a mismatch is obvious.
+          field_rename: none
+          include_if_null: false
+      drift_dev:
+        options:
+          # Column names are snake_case in SQL, camelCase in Dart.
+          case_from_dart_to_sql: snake_case
+          # Dates are stored as ISO-8601 UTC text: readable in any SQLite
+          # browser, sortable as text, and unambiguous across time zones.
+          store_date_time_values_as_text: true
+          # Generated companions and inserts take named parameters.
+          named_parameters: true
+          # Fail the build instead of silently generating code that would
+          # break at runtime.
+          skip_verification_code: false
+          # The manager API is not used: repositories own all querying, so the
+          # generated managers would be dead code.
+          generate_manager: false

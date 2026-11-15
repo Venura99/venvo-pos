@@ -1,0 +1,49 @@
+Venvo POS
+=========
+
+What this installs
+
+  The program files go into the folder shown on the next page. Nothing else
+  on this computer is changed: no services, no drivers, no database server.
+  Venvo POS keeps everything in one SQLite file and needs no network.
+
+Where your business data lives
+
+  %APPDATA%\lk.venvoglobal\VenvoPOS
+
+  That folder holds the database, the attachments you add to documents, your
+  backups and anything you have exported. It is NOT inside the program
+  folder, which means:
+
+    * Upgrading to a newer version leaves your data untouched.
+    * Uninstalling leaves your data untouched.
+    * Your data is specific to the Windows user account you are signed in as.
+
+Before you rely on this installation
+
+  Open Backup & Restore and take a backup, then copy that archive somewhere
+  other than this computer — a USB stick, a network share, anywhere. A disk
+  failure takes the database with it, and a backup sitting on the same disk
+  goes with it.
+
+  Switch on the automatic daily backup in Settings if it is not already on.
+  It runs on the first sign-in of each day and keeps the newest few
+  automatically; backups you take by hand are never deleted for you.
+
+Upgrading
+
+  Run the newer installer over the top. It replaces the program files and
+  leaves the data alone. The database is upgraded automatically the first
+  time the newer version opens it.
+
+  Do not install an older version over a newer one: the program refuses to
+  open a database written by a newer release rather than risk misreading it,
+  so you would be left unable to start. If you need to go back, restore a
+  backup taken with the older version.
+
+First run
+
+  The first time it starts there are no accounts. It will ask you to create
+  the administrator account — choose a password you will remember, because
+  there is no way to recover it. Nothing is installed with a default
+  password.
