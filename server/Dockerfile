@@ -61,8 +61,9 @@ COPY --from=web /src/build/web /usr/share/venvo-pos/web
 
 # The business's data. Mount a volume here — everything that matters lives in
 # this one directory, which is also what makes a backup a single archive.
+# No VOLUME instruction: Railway refuses Dockerfiles that declare one, and
+# docker-compose.yml / Railway each mount their own volume at this path.
 RUN mkdir -p /var/lib/venvo-pos && chown venvo:venvo /var/lib/venvo-pos
-VOLUME ["/var/lib/venvo-pos"]
 
 USER venvo
 # TZ matters: "remind N days before the cheque date" and "today" are worked
