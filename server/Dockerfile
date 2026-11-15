@@ -10,7 +10,15 @@
 
 # The web app, built once and served by the API from the same address.
 # Pinned to the Flutter release the project is developed and tested on.
-FROM ghcr.io/cirruslabs/flutter:3.47.9 AS web
+# No prebuilt image exists for this release, so the SDK is cloned at its tag.
+FROM debian:stable-slim AS web
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git curl unzip xz-utils ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+RUN git clone --depth 1 --branch 3.47.9 https://github.com/flutter/flutter.git /opt/flutter
+ENV PATH="/opt/flutter/bin:${PATH}"
+RUN flutter config --no-analytics --enable-web && flutter precache --web
 
 WORKDIR /src
 COPY packages/venvo_core/ packages/venvo_core/
